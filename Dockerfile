@@ -32,6 +32,13 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 777 /var/www/html/uploads
 
+# Créer un script d'initialisation pour les permissions
+RUN echo '#!/bin/bash\n\
+mkdir -p /var/www/html/uploads\n\
+chown -R www-data:www-data /var/www/html/uploads\n\
+chmod -R 777 /var/www/html/uploads\n\
+exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+
 # Exposer le port 80
 EXPOSE 80
 
@@ -40,6 +47,9 @@ RUN echo "upload_max_filesize = 50M" >> /usr/local/etc/php/conf.d/uploads.ini \
     && echo "post_max_size = 50M" >> /usr/local/etc/php/conf.d/uploads.ini \
     && echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/uploads.ini \
     && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini
+
+# Utiliser le script d'entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Démarrer Apache
 CMD ["apache2-foreground"]
