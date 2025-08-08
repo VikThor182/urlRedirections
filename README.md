@@ -112,11 +112,11 @@ Tapez `make help` pour voir toutes les commandes disponibles :
 ### "make n'est pas reconnu"
 **Solution** : Utiliser les commandes Docker directement :
 ```
-docker-compose up -d --build
+docker compose up -d --build
 ```
 Pour arrêter :
 ```
-docker-compose down
+docker compose down
 ```
 
 ### "Docker n'est pas en cours d'exécution"
