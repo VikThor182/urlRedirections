@@ -3,33 +3,34 @@ FROM php:8.2-apache
 # Installer les extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
     libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
     unzip \
-    && docker-php-ext-install zip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install zip gd \
     && rm -rf /var/lib/apt/lists/*
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copier les fichiers de configuration d'abord
-COPY composer.json composer.lock /var/www/html/
+# Copier composer.json seulement (pas le lock qui peut ne pas exister)
+COPY composer.json /var/www/html/
 
 # Installer les dépendances PHP
 WORKDIR /var/www/html
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copier les fichiers de l'application
+# Copier tous les fichiers de l'application
 COPY . /var/www/html/
 
-# Créer le dossier uploads avec les bonnes permissions AVANT de changer le propriétaire
-RUN mkdir -p /var/www/html/uploads \
-    && chmod 777 /var/www/html/uploads
+# Créer le dossier uploads et définir les permissions
+RUN mkdir -p /var/www/html/uploads
 
-# Définir les permissions pour tous les fichiers
+# Définir les permissions pour Apache
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
-
-# S'assurer que uploads reste accessible en écriture
-RUN chmod 777 /var/www/html/uploads
+    && chmod -R 755 /var/www/html \
+    && chmod -R 777 /var/www/html/uploads
 
 # Exposer le port 80
 EXPOSE 80
