@@ -1,0 +1,20 @@
+{
+    "name": "url-redirection/app",
+    "description": "Application de redirection d'URLs basée sur un fichier Excel",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpoffice/phpspreadsheet": "^1.29"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "mkdir -p uploads"
+        ]
+    }
+}
+

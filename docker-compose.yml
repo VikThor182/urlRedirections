@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  urlredirection:
+    build: .
+    container_name: urlredirection-app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./uploads:/var/www/html/uploads
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    restart: unless-stopped
+
+volumes:
+  uploads:
